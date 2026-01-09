@@ -10,8 +10,6 @@ format:
     code-copy: true
 ---
 
-## What this is
-
 A quiet place to examine social issues and justice measuring the gaps between what we are "supposed" to expect and what we actually see.
 
 ### Current focus areas
@@ -40,7 +38,7 @@ A data-driven look at arrests where criminal charges or convictions are not part
 
 <hr class="obs-divider">
 
-[Open →](projects/ice-arrests.qmd)
+[Open →](projects/2026.01.09_ICE_activity/2026.01.09_ICE_activity.qmd)
 
 </div>
 
