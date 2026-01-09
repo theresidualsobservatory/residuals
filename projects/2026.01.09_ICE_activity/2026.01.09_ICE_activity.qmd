@@ -447,10 +447,10 @@ path_to_images = "projects/2026.01.09_ICE_activity/images/"
 # 
 # ggsave(
 #   plot = p1,
-#   filename = 
+#   filename =
 #     paste0(path_to_images, "DailyICEApprehensions.jpg"),
-#   width = 12, height = 7, 
-#   units = "in", 
+#   width = 12, height = 7,
+#   units = "in",
 #   dpi = 300
 # )
 ```
