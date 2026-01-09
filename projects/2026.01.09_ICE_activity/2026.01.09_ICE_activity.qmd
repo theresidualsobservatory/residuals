@@ -30,53 +30,53 @@ libraries(
 ```{r, eval = TRUE}
 
 # Data from: https://deportationdata.org/data/processed/ice.html. Codebook: https://deportationdata.org/docs/ice/codebook.html
-# dataA_00 = 
+# dataA_00 =
 #   read_xlsx("ANALYSIS-ERO Admin Arrests_LESA-STU-FINAL Release.xlsx") %>%
 #   clean_names()
-# 
-# dataA_01 = 
+#
+# dataA_01 =
 #   dataA_00 %>%
 #   mutate(
 #     apprehension_date2 = apprehension_date %>% as.Date()
 #   ) %>%
 #   mutate(
-#     apprehension_month = month(apprehension_date2) %>% str_pad(width = 2, side = "left", pad = "0"), 
-#     apprehension_year = year(apprehension_date2), 
+#     apprehension_month = month(apprehension_date2) %>% str_pad(width = 2, side = "left", pad = "0"),
+#     apprehension_year = year(apprehension_date2),
 #     apprehension_year_month = paste0(apprehension_year, "-", apprehension_month)
 #   ) %>%
 #   mutate(
-#     apprehension_criminality2 = 
+#     apprehension_criminality2 =
 #       plyr::mapvalues(
-#         apprehension_criminality, 
+#         apprehension_criminality,
 #         from = c(
-#           "1 Convicted Criminal", 
-#           "2 Pending Criminal Charges", 
+#           "1 Convicted Criminal",
+#           "2 Pending Criminal Charges",
 #           "3 Other Immigration Violator"
-#         ), 
+#         ),
 #         to = c("Convicted criminal", "Pending criminal charges", "No convictions or criminal charges")
 #       ) %>%
 #       factor(levels = c("Convicted criminal", "Pending criminal charges", "No convictions or criminal charges"))
 #     )
-# 
+#
 # dataA = dataA_01
-# 
+#
 # saveRDS(dataA, "ANALYSIS-ERO Admin Arrests_LESA-STU-FINAL Release.rds")
-# 
+#
 # dataB_00 =
 #   read_xlsx("ANALYSIS-ICE Detentions_LESA-STU_FINAL Release.xlsx") %>% clean_names()
-# 
-# dataB_01 = 
+#
+# dataB_01 =
 #   dataB_00 %>%
 #   mutate(
-#     stay_book_in_date_time = stay_book_in_date_time %>% as.Date(), 
-#     stay_book_out_date = stay_book_out_date %>% as.Date(), 
-#     book_in_month = stay_book_in_date_time %>% month(), 
-#     book_in_year = stay_book_in_date_time %>% year, 
+#     stay_book_in_date_time = stay_book_in_date_time %>% as.Date(),
+#     stay_book_out_date = stay_book_out_date %>% as.Date(),
+#     book_in_month = stay_book_in_date_time %>% month(),
+#     book_in_year = stay_book_in_date_time %>% year,
 #     book_in_year_month = paste0(book_in_year, "-", str_pad(book_in_month, width = 2, side = "left", pad = "0"))
 #   )
-# 
+#
 # dataB = dataB_01
-# 
+#
 # saveRDS(dataB, "ANALYSIS-ICE Detentions_LESA-STU_FINAL Release.rds")
 
 
@@ -1023,8 +1023,8 @@ Arrests conducted through workplace inspections or raids.
 #     fontface = "bold"
 #   ) +
 #   labs(
-#     x = "Duration of detention",
-#     y = "Weeks",
+#     x = "Weeks detained",
+#     y = "# people",
 #     title = "Number of weeks held in ICE detention"
 #   ) +
 #   theme(
