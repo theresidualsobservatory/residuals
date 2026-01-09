@@ -1,0 +1,1051 @@
+---
+title: "ICE activity"
+output: 
+  html_document: 
+    toc: TRUE
+    toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = FALSE, eval = FALSE, message = FALSE, warning = FALSE)
+
+library(easypackages)
+
+libraries(
+  c(
+    "ggplot2", 
+    "cowplot", 
+    "tidyr", 
+    "tidyverse", 
+    "ggpubr", 
+    "janitor", 
+    "stringr", 
+    "readxl"
+  )
+)
+```
+
+```{r, eval = TRUE}
+
+# Data from: https://deportationdata.org/data/processed/ice.html. Codebook: https://deportationdata.org/docs/ice/codebook.html
+# dataA_00 = 
+#   read_xlsx("ANALYSIS-ERO Admin Arrests_LESA-STU-FINAL Release.xlsx") %>%
+#   clean_names()
+# 
+# dataA_01 = 
+#   dataA_00 %>%
+#   mutate(
+#     apprehension_date2 = apprehension_date %>% as.Date()
+#   ) %>%
+#   mutate(
+#     apprehension_month = month(apprehension_date2) %>% str_pad(width = 2, side = "left", pad = "0"), 
+#     apprehension_year = year(apprehension_date2), 
+#     apprehension_year_month = paste0(apprehension_year, "-", apprehension_month)
+#   ) %>%
+#   mutate(
+#     apprehension_criminality2 = 
+#       plyr::mapvalues(
+#         apprehension_criminality, 
+#         from = c(
+#           "1 Convicted Criminal", 
+#           "2 Pending Criminal Charges", 
+#           "3 Other Immigration Violator"
+#         ), 
+#         to = c("Convicted criminal", "Pending criminal charges", "No convictions or criminal charges")
+#       ) %>%
+#       factor(levels = c("Convicted criminal", "Pending criminal charges", "No convictions or criminal charges"))
+#     )
+# 
+# dataA = dataA_01
+# 
+# saveRDS(dataA, "ANALYSIS-ERO Admin Arrests_LESA-STU-FINAL Release.rds")
+# 
+# dataB_00 =
+#   read_xlsx("ANALYSIS-ICE Detentions_LESA-STU_FINAL Release.xlsx") %>% clean_names()
+# 
+# dataB_01 = 
+#   dataB_00 %>%
+#   mutate(
+#     stay_book_in_date_time = stay_book_in_date_time %>% as.Date(), 
+#     stay_book_out_date = stay_book_out_date %>% as.Date(), 
+#     book_in_month = stay_book_in_date_time %>% month(), 
+#     book_in_year = stay_book_in_date_time %>% year, 
+#     book_in_year_month = paste0(book_in_year, "-", str_pad(book_in_month, width = 2, side = "left", pad = "0"))
+#   )
+# 
+# dataB = dataB_01
+# 
+# saveRDS(dataB, "ANALYSIS-ICE Detentions_LESA-STU_FINAL Release.rds")
+
+
+# dataA = readRDS("projects/2026.01.09 ICE activity/ANALYSIS-ERO Admin Arrests_LESA-STU-FINAL Release.rds")
+# dataB = readRDS("projects/2026.01.09 ICE activity/ANALYSIS-ICE Detentions_LESA-STU_FINAL Release.rds")
+
+path_to_data = "projects/2026.01.09_ICE_activity/"
+path_to_images = "projects/2026.01.09_ICE_activity/images/"
+```
+
+# Monthly ICE apprehensions
+
+## Total monthly ICE apprehensions
+
+```{r, include = FALSE, eval = FALSE, fig.align = "center", fig.width = 7, fig.height = 5}
+# tempA = 
+#   dataA %>%
+#   group_by(
+#     apprehension_year_month
+#   ) %>%
+#   summarise(
+#     n_apprehension = length(apprehension_year_month)
+#   ) %>%
+#   filter(apprehension_year_month != "2025-10") %>%
+#   ungroup()
+# 
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_year_month, 
+#     y = n_apprehension
+#   )
+# ) + 
+#   geom_line(aes(group = 1)) +
+#   # geom_point() +
+#   scale_y_continuous(
+#     limits = c(0, 50000), 
+#     breaks = seq(0, 50000, 5000)
+#   ) +
+#   labs(
+#     x = "Year-month", 
+#     y = "# apprehensions", 
+#     title = "Monthly ICE apprehensions"
+#   ) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1), 
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(plot = p1, filename = paste0(path_to_images, "MonthlyICEApprehensions.jpg"), 
+#        width = 7, height = 5, 
+#        units = "in", 
+#        dpi = 300
+#        )
+
+
+
+```
+
+![](images/MonthlyICEApprehensions.jpg)
+
+## Monthly ICE apprehensions by criminality
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 7, fig.height = 5}
+# tempA = 
+#   dataA %>%
+#   group_by(
+#     apprehension_year_month, apprehension_criminality
+#   ) %>%
+#   summarise(
+#     n_apprehension = length(apprehension_criminality)
+#   ) %>%
+#   filter(apprehension_year_month != "2025-10") %>%
+#   ungroup()
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_year_month, 
+#     y = n_apprehension, 
+#     group = apprehension_criminality, 
+#     color = apprehension_criminality
+#   )
+# ) + 
+#   geom_line(show.legend = FALSE) +
+#   geom_point() +
+#   scale_y_continuous(
+#     limits = c(0, 15000), 
+#     breaks = seq(0, 20000, 2000)
+#   ) +
+#   scale_color_manual(
+#     values = 
+#       c(
+#         "black", "blue", "red"
+#       ), 
+#     labels = 
+#       c(
+#         "1 Convicted Criminal" = "Convicted criminal", 
+#         "2 Pending Criminal Charges" = "Pending criminal charges", 
+#         "3 Other Immigration Violator" = "No convictions or criminal charges"
+#       )
+#   ) +
+#   labs(
+#     x = "Year-month", 
+#     y = "# apprehensions", 
+#     title = "Monthy ICE apprehensions by criminality"
+#   ) +
+#   guides(
+#     color = guide_legend(
+#       override.aes = list(
+#         shape = 15,
+#         size = 5,
+#         stroke = 0
+#       )
+#     )
+#   ) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom", 
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(plot = p1, filename = paste0(path_to_images, "MonthlyICEApprehensionsByCriminality.jpg"),
+#        width = 7, height = 5,
+#        units = "in",
+#        dpi = 300
+#        )
+
+```
+
+![](images/MonthlyICEApprehensionsByCriminality.jpg)
+
+# Monthly deportations vs. total apprehensions
+
+## Monthly apprehensions leading to deportations
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+# tempA = 
+#   dataA %>%
+#   group_by(
+#     apprehension_year_month, apprehension_criminality2
+#   ) %>%
+#   summarise(
+#     n_total = length(final_order_yes_no), 
+#     n_removal_yes = sum(final_order_yes_no == "YES", na.rm = TRUE), 
+#     p_removed = (n_removal_yes/n_total) * 100
+#   ) %>%
+#   filter(
+#     apprehension_year_month != "2025-10"
+#   ) %>%
+#   ungroup()
+# 
+# time_labels = tempA$apprehension_year_month %>% unique() %>% sort()
+# time_breaks = time_labels[c(1, seq(2, length(time_labels), 2))]
+# 
+# p1 = ggplot(
+#   tempA
+# ) + 
+#   geom_line(
+#     aes(
+#       x = apprehension_year_month, 
+#       y = n_total, 
+#       color = "black"
+#     ),
+#     group = 1
+#     ) +
+#   # geom_point(
+#   #   aes(
+#   #     x = apprehension_year_month, 
+#   #     y = n_total
+#   #   )
+#   # ) + 
+#   geom_line(
+#     aes(
+#       x = apprehension_year_month, 
+#       y = n_removal_yes, 
+#       color = "red"
+#     ),
+#     group = 1
+#     ) +
+#   # geom_point(
+#   #   aes(
+#   #     x = apprehension_year_month, 
+#   #     y = n_removal_yes
+#   #   )
+#   # ) + 
+#   labs(
+#     x = "Year-month", 
+#     y = "# people", 
+#     title = "Monthly apprehensions leading to deportations"
+#     
+#   ) +
+#   scale_x_discrete(
+#     breaks = time_breaks
+#   ) +
+#   scale_y_continuous(
+#     breaks = seq(0, 20000, 2000)
+#   ) +
+#   scale_color_manual(
+#     values = c("black", "red"), 
+#     labels = c("total apprehensions", "apprehensions leading to deportation")
+#   ) +
+#   facet_wrap(~apprehension_criminality2) + 
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5), 
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.position = "bottom", 
+#     legend.key = element_blank(),
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = 
+#     paste0(path_to_images, "MonthlyApprehensions_Deportationg.jpg"), 
+#   width = 12, height = 7, 
+#   units = "in", 
+#   
+# )
+```
+
+![](images/MonthlyApprehensions_Deportationg.jpg)
+
+## Monthly percent apprehensions leading to deportation
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+# tempA = 
+#   dataA %>%
+#   group_by(
+#     apprehension_year_month, apprehension_criminality2
+#   ) %>%
+#   summarise(
+#     n_total = length(final_order_yes_no), 
+#     n_removal_yes = sum(final_order_yes_no == "YES", na.rm = TRUE), 
+#     p_removed = (n_removal_yes/n_total) * 100
+#   ) %>%
+#   filter(
+#     apprehension_year_month != "2025-10"
+#   ) %>%
+#   ungroup()
+# 
+# time_labels = tempA$apprehension_year_month %>% unique() %>% sort()
+# time_breaks = time_labels[c(1, seq(2, length(time_labels), 2))]
+# 
+# p1 = ggplot(tempA) + 
+#   geom_line(
+#     aes(
+#       x = apprehension_year_month, 
+#       y = p_removed
+#     ),
+#     group = 1
+#     ) +
+#   # geom_point(
+#   #   aes(
+#   #     x = apprehension_year_month, 
+#   #     y = n_total
+#   #   )
+#   # ) + 
+#   scale_x_discrete(
+#     breaks = time_breaks
+#   ) +
+#   scale_y_continuous(
+#     limits = c(0, 100), 
+#     breaks = seq(0, 100, 10)
+#   ) +
+#   labs(
+#     x = "Year-month", 
+#     y = "Percent apprehended that were removed", 
+#     title = "Percent apprehensions leading to deportation (by month)"
+#   ) +
+#   facet_wrap(~apprehension_criminality2) + 
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5), 
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom",
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = 
+#     paste0(path_to_images, "PercentApprehensions_Deportation.jpg"), 
+#   width = 12, height = 7, 
+#   units = "in", 
+#   dpi = 300
+# )
+```
+
+![](images/PercentApprehensions_Deportation.jpg)
+
+# Daily ICE apprehensions
+
+## Total daily ICE apprehensions
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+# tempA = 
+#   dataA %>%
+#   group_by(
+#     apprehension_criminality, apprehension_date2 
+#   ) %>%
+#   summarise(
+#     n_arrests = length(apprehension_date2)
+#   ) %>%
+#   mutate(
+#     day_of_week = 
+#       weekdays(apprehension_date2), 
+#     day_type = 
+#       plyr::mapvalues(
+#         day_of_week, 
+#         from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+#         to = c("weekday", "weekday", "weekday", "weekday", "weekday", "Saturday", "Sunday")
+#       ) %>%
+#       factor(levels = c("weekday", "Saturday", "Sunday"))
+#   )
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_date2, 
+#     y = n_arrests
+#   )
+# ) + 
+#   geom_line(group = 1, alpha = 0.3, linetype = "dotted") +
+#   geom_point(
+#     aes(color = day_type)
+#   ) + 
+#   scale_x_date(
+#     breaks = seq.Date("2023-10-01", "2025-09-01", by = "2 months")
+#   ) +
+#   scale_color_manual(
+#     values = c("grey", "blue", "red")
+#   ) + 
+#   labs(
+#     x = "Date", 
+#     y = "# Apprehensions", 
+#     title = "Daily ICE apprehensions"
+#   ) +
+#   facet_wrap(~apprehension_criminality) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom",
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1,
+#   filename = 
+#     paste0(path_to_images, "DailyICEApprehensions.jpg"),
+#   width = 12, height = 7, 
+#   units = "in", 
+#   dpi = 300
+# )
+```
+
+![](images/DailyICEApprehensions.jpg)
+
+## Daily jail transfers arrests
+
+Arrests where ICE takes custody of an individual already incarcerated by another authority (reactive, low discretion).
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+# c(
+#   "CAP Local Incarceration",
+#   "CAP State Incarceration",
+#   "CAP Federal Incarceration",
+#   "Criminal Alien Program"  
+# )
+# 
+# 
+# tempA = 
+#   dataA %>%
+#   filter(
+#     apprehension_method %in% 
+#       c(
+#         "CAP Local Incarceration",
+#         "CAP State Incarceration",
+#         "CAP Federal Incarceration",
+#         "Criminal Alien Program"  
+#       )
+#   ) %>%
+#   group_by(
+#     apprehension_criminality2, apprehension_date2 
+#   ) %>%
+#   summarise(
+#     n_arrests = length(apprehension_date2)
+#   ) %>%
+#   mutate(
+#     day_of_week = 
+#       weekdays(apprehension_date2), 
+#     day_type = 
+#       plyr::mapvalues(
+#         day_of_week, 
+#         from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+#         to = c("weekday", "weekday", "weekday", "weekday", "weekday", "Saturday", "Sunday")
+#       ) %>%
+#       factor(levels = c("weekday", "Saturday", "Sunday"))
+#   )
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_date2, 
+#     y = n_arrests
+#   )
+# ) + 
+#   geom_line(group = 1, alpha = 0.3, linetype = "dotted") +
+#   geom_point(
+#     aes(color = day_type)
+#   ) + 
+#   scale_x_date(
+#     breaks = seq.Date("2023-10-01", "2025-09-01", by = "2 months")
+#   ) +
+#   scale_color_manual(
+#     values = c("grey", "blue", "red")
+#   ) + 
+#   labs(
+#     x = "Date", 
+#     y = "# Apprehensions", 
+#     title = "Jail transfer ICE arrests (by day)"
+#   ) +
+#   facet_wrap(~apprehension_criminality2) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom",
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = 
+#     paste0(path_to_images, "JailTransfers.jpg"), 
+#   dpi = 300, 
+#   height = 7, width = 12, 
+#   units = "in"
+# )
+
+```
+
+![](images/DailyICEApprehensions.jpg)
+
+## Daily supervision/administrative arrests
+
+Arrests arising from ongoing supervision, compliance checks, or administrative follow-up rather than proactive enforcement.
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+# c(
+#   "Probation and Parole",
+#   "Located",
+#   "ERO Reprocessed Arrest"
+# )
+
+# 
+# tempA = 
+#   dataA %>%
+#   filter(
+#     apprehension_method %in% 
+#       c(
+#         "Probation and Parole",
+#         "Located",
+#         "ERO Reprocessed Arrest"
+#       )
+#   ) %>%
+#   group_by(
+#     apprehension_criminality2, apprehension_date2 
+#   ) %>%
+#   summarise(
+#     n_arrests = length(apprehension_date2)
+#   ) %>%
+#   mutate(
+#     day_of_week = 
+#       weekdays(apprehension_date2), 
+#     day_type = 
+#       plyr::mapvalues(
+#         day_of_week, 
+#         from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+#         to = c("weekday", "weekday", "weekday", "weekday", "weekday", "Saturday", "Sunday")
+#       ) %>%
+#       factor(levels = c("weekday", "Saturday", "Sunday"))
+#   )
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_date2, 
+#     y = n_arrests
+#   )
+# ) + 
+#   geom_line(group = 1, alpha = 0.3, linetype = "dotted") +
+#   geom_point(
+#     aes(color = day_type)
+#   ) + 
+#   scale_x_date(
+#     breaks = seq.Date("2023-10-01", "2025-09-01", by = "2 months")
+#   ) +
+#   scale_color_manual(
+#     values = c("grey", "blue", "red")
+#   ) + 
+#   labs(
+#     x = "Date", 
+#     y = "# Apprehensions", 
+#     title = "Supervision/administrative ICE apprehensions (by day)"
+#   ) +
+#   facet_wrap(~apprehension_criminality2) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom",
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = 
+#     paste0(path_to_images, "AdministrativeICE.jpg"), 
+#   width = 12, height = 7, 
+#   dpi = 300, units = "in"
+# )
+
+```
+
+![](images/AdministrativeICE.jpg)
+
+## Daily at-large/community arrests
+
+Proactive ICE-initiated arrests in the community or interior, reflecting high discretionary enforcement activity.
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+
+# c(
+#   "Custodial Arrest",
+#   "Non-Custodial Arrest",
+#   "Traffic Check",
+#   "Patrol Interior",
+#   "Other efforts"
+# )
+# 
+# tempA = 
+#   dataA %>%
+#   filter(
+#     apprehension_method %in% 
+#       c(
+#         "Custodial Arrest",
+#         "Non-Custodial Arrest",
+#         "Traffic Check",
+#         "Patrol Interior",
+#         "Other efforts"
+#       )
+#   ) %>%
+#   group_by(
+#     apprehension_criminality2, apprehension_date2 
+#   ) %>%
+#   summarise(
+#     n_arrests = length(apprehension_date2)
+#   ) %>%
+#   mutate(
+#     day_of_week = 
+#       weekdays(apprehension_date2), 
+#     day_type = 
+#       plyr::mapvalues(
+#         day_of_week, 
+#         from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+#         to = c("weekday", "weekday", "weekday", "weekday", "weekday", "Saturday", "Sunday")
+#       ) %>%
+#       factor(levels = c("weekday", "Saturday", "Sunday"))
+#   )
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_date2, 
+#     y = n_arrests
+#   )
+# ) + 
+#   geom_line(group = 1, alpha = 0.3, linetype = "dotted") +
+#   geom_point(
+#     aes(color = day_type)
+#   ) + 
+#   scale_x_date(
+#     breaks = seq.Date("2023-10-01", "2025-09-01", by = "2 months")
+#   ) +
+#   scale_color_manual(
+#     values = c("grey", "blue", "red")
+#   ) + 
+#   labs(
+#     x = "Date", 
+#     y = "# Apprehensions", 
+#     title = "At-large/community ICE apprehensions (by day)"
+#   ) +
+#   facet_wrap(~apprehension_criminality2) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom",
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = paste0(path_to_images, "CommunityICE.jpg"), 
+#   height = 7, width = 12, 
+#   dpi = 300, units = "in"
+# )
+```
+
+![](images/CommunityICE.jpg)
+
+## Daily border/transport/inspection
+
+Arrests occurring at borders, during transit, or through inspection-based encounters rather than residential enforcement.
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+# c(
+#   "Patrol Border",
+#   "Boat Patrol",
+#   "Anti-Smuggling",
+#   "Crewman/Stowaway",
+#   "Transportation Check Aircraft",
+#   "Transportation Check Bus",
+#   "Transportation Check Passenger Train",
+#   "Inspections",
+#   "Presented During Inspection"
+# )
+
+
+# tempA = 
+#   dataA %>%
+#   filter(
+#     apprehension_method %in% 
+#       c(
+#         "Patrol Border",
+#         "Boat Patrol",
+#         "Anti-Smuggling",
+#         "Crewman/Stowaway",
+#         "Transportation Check Aircraft",
+#         "Transportation Check Bus",
+#         "Transportation Check Passenger Train",
+#         "Inspections",
+#         "Presented During Inspection"
+#       )
+#   ) %>%
+#   group_by(
+#     apprehension_criminality2, apprehension_date2 
+#   ) %>%
+#   summarise(
+#     n_arrests = length(apprehension_date2)
+#   ) %>%
+#   mutate(
+#     day_of_week = 
+#       weekdays(apprehension_date2), 
+#     day_type = 
+#       plyr::mapvalues(
+#         day_of_week, 
+#         from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+#         to = c("weekday", "weekday", "weekday", "weekday", "weekday", "Saturday", "Sunday")
+#       ) %>%
+#       factor(levels = c("weekday", "Saturday", "Sunday"))
+#   )
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_date2, 
+#     y = n_arrests
+#   )
+# ) + 
+#   geom_line(group = 1, alpha = 0.3, linetype = "dotted") +
+#   geom_point(
+#     aes(color = day_type)
+#   ) + 
+#   scale_x_date(
+#     breaks = seq.Date("2023-10-01", "2025-09-01", by = "2 months")
+#   ) +
+#   scale_color_manual(
+#     values = c("grey", "blue", "red")
+#   ) + 
+#   labs(
+#     x = "Date", 
+#     y = "# Apprehensions", 
+#     title = "Border/transport/inspection ICE apprehensions (by day)"
+#   ) +
+#   facet_wrap(~apprehension_criminality2) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom",
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = paste0(path_to_images, "InspectionICE.jpg"), 
+#   height = 7, width = 12, 
+#   units = "in", dpi = 300
+# )
+```
+
+![](images/CommunityICE.jpg)
+
+## Daily interagency taskforce arrests
+
+Arrests where ICE gains custody through joint operations or actions initiated by other agencies.
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+
+
+# tempA = 
+#   dataA %>%
+#   filter(
+#     apprehension_method %in% 
+#       c(
+#         "287(g) Program",
+#         "Other Task Force",
+#         "Organized Crime Drug Enforcement Task Force",
+#         "Law Enforcement Agency Response Unit",
+#         "Other Agency (turned over to INS)"
+#       )
+#   ) %>%
+#   group_by(
+#     apprehension_criminality2, apprehension_date2 
+#   ) %>%
+#   summarise(
+#     n_arrests = length(apprehension_date2)
+#   ) %>%
+#   mutate(
+#     day_of_week = 
+#       weekdays(apprehension_date2), 
+#     day_type = 
+#       plyr::mapvalues(
+#         day_of_week, 
+#         from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+#         to = c("weekday", "weekday", "weekday", "weekday", "weekday", "Saturday", "Sunday")
+#       ) %>%
+#       factor(levels = c("weekday", "Saturday", "Sunday"))
+#   )
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_date2, 
+#     y = n_arrests
+#   )
+# ) + 
+#   geom_line(group = 1, alpha = 0.3, linetype = "dotted") +
+#   geom_point(
+#     aes(color = day_type)
+#   ) + 
+#   scale_x_date(
+#     breaks = seq.Date("2023-10-01", "2025-09-01", by = "2 months")
+#   ) +
+#   scale_color_manual(
+#     values = c("grey", "blue", "red")
+#   ) + 
+#   labs(
+#     x = "Date", 
+#     y = "# Apprehensions", 
+#     title = "Interagency/taskforce ICE apprehensions (by day)"
+#   ) +
+#   facet_wrap(~apprehension_criminality2) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(), 
+#     legend.key = element_blank(), 
+#     legend.position = "bottom",
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = 
+#     paste0(path_to_images, "interagencyICE.jpg"), 
+#   height = 7, width = 12, 
+#   dpi = 300, units = "in"
+# )
+```
+
+![](images/interagencyICE.jpg)\
+
+## Daily worksite enforcement arrests
+
+Arrests conducted through workplace inspections or raids.
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 12, fig.height = 5}
+
+# tempA = 
+#   dataA %>%
+#   filter(
+#     apprehension_method %in% 
+#       c(
+#         "Worksite Enforcement"
+#       )
+#   ) %>%
+#   group_by(
+#     apprehension_criminality2, apprehension_date2 
+#   ) %>%
+#   summarise(
+#     n_arrests = length(apprehension_date2)
+#   ) %>%
+#   mutate(
+#     day_of_week = 
+#       weekdays(apprehension_date2), 
+#     day_type = 
+#       plyr::mapvalues(
+#         day_of_week, 
+#         from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+#         to = c("weekday", "weekday", "weekday", "weekday", "weekday", "Saturday", "Sunday")
+#       ) %>%
+#       factor(levels = c("weekday", "Saturday", "Sunday"))
+#   )
+# 
+# p1 = ggplot(
+#   tempA, 
+#   aes(
+#     x = apprehension_date2, 
+#     y = n_arrests
+#   )
+# ) + 
+#   geom_line(group = 1, alpha = 0.3, linetype = "dotted") +
+#   geom_point(
+#     aes(color = day_type)
+#   ) + 
+#   scale_x_date(
+#     breaks = seq.Date("2023-10-01", "2025-09-01", by = "2 months")
+#   ) +
+#   scale_color_manual(
+#     values = c("grey", "blue", "red")
+#   ) + 
+#   labs(
+#     x = "Date", 
+#     y = "# Apprehensions", 
+#     title = "Worksite enforcement ICE apprehensions (by day)"
+#   ) +
+#   facet_wrap(~apprehension_criminality2) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
+#     legend.title = element_blank(),
+#     legend.position = "bottom",
+#     legend.key = element_blank(), 
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# ggsave(
+#   plot = p1, 
+#   filename = paste0(path_to_images, "worksiteICE.jpg"), 
+#   height = 7, width = 12, 
+#   dpi = 300, units = "in"
+# )
+```
+
+![](images/worksiteICE.jpg)
+
+# Detention time
+
+```{r, include = TRUE, eval = TRUE, fig.align = "center", fig.width = 7, fig.asp = 0.6}
+
+# tempA =
+#   dataB %>%
+#   select(
+#     unique_identifier, stay_book_in_date_time, stay_book_out_date
+#   ) %>%
+#   na.omit() %>%
+#   mutate(
+#     stay_duration =
+#       difftime(stay_book_out_date, stay_book_in_date_time, units = "weeks") %>% as.numeric()
+#   )
+# 
+# median_stay_duration =
+#   median(tempA$stay_duration)
+# 
+# p1 = ggplot(
+#   tempA,
+#   aes(
+#     x = stay_duration
+#   )
+# ) +
+#   geom_bar(color = "grey", fill = "grey") +
+#   scale_x_continuous(
+#     limits = c(0, 50),
+#     breaks = seq(0, 50, 5)
+#   ) +
+#   geom_vline(
+#     xintercept = median_stay_duration,
+#     linetype = "dashed"
+#   ) +
+#   annotate(
+#     geom = "text",
+#     x = median_stay_duration - 1,
+#     y = 20000,
+#     angle = 90,
+#     label = paste0("median = ", plyr::round_any(median_stay_duration, 0.01)),
+#     fontface = "bold"
+#   ) +
+#   labs(
+#     x = "Duration of detention",
+#     y = "Weeks",
+#     title = "Number of weeks held in ICE detention"
+#   ) +
+#   theme(
+#     text = element_text(size = 12, face = "bold"),
+#     plot.title = element_text(hjust = 0.5),
+#     axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+#     legend.title = element_blank(),
+#     legend.position = "bottom",
+#     legend.key = element_blank(),
+#     panel.background = element_rect(fill = NA, color = "black"),
+#     panel.border = element_rect(fill = NA, color = "black"),
+#     strip.background = element_rect(fill = NA, color = "black")
+#   )
+# 
+# 
+# ggsave(
+#   plot = p1,
+#   filename = paste0(path_to_images, "mediandurationICE.jpg"),
+#   height = 5, width = 7,
+#   dpi = 300, units = "in"
+# )
+```
+
+![](images/mediandurationICE.jpg)

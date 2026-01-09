@@ -1,0 +1,70 @@
+/* css styles */
+
+/* --- Project stack layout --- */
+
+.project-stack{
+  display:flex;
+  flex-direction:column;
+  gap:1.6rem;
+  margin-top:1.25rem;
+}
+
+/* --- Individual project panel --- */
+
+.project-panel{
+  width:75%;
+  margin:0 auto;
+  padding:1.6rem 2rem;
+
+  background:#f8f8f8;
+  border-left:4px solid #444;
+  border-radius:14px;
+
+  box-shadow:0 12px 26px rgba(0,0,0,0.06);
+}
+
+/* --- Observatory header --- */
+
+.obs-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  font-size:0.75rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+
+  color:#666;
+  margin-bottom:0.4rem;
+}
+
+.obs-id{
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  opacity:0.8;
+}
+
+/* --- Divider --- */
+
+.obs-divider{
+  border:0;
+  border-top:1px dashed #ccc;
+  margin:1.2rem 0 0.8rem 0;
+}
+
+/* --- Typography spacing --- */
+
+.project-panel h3{
+  margin-top:0;
+  margin-bottom:0.6rem;
+}
+
+/* --- Mobile --- */
+
+@media (max-width: 900px){
+  .project-panel{
+    width:95%;
+    padding:1.25rem 1.25rem;
+  }
+}
+
+
