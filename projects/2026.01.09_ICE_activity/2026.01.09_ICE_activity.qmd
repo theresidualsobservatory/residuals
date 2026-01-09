@@ -545,7 +545,7 @@ Arrests where ICE takes custody of an individual already incarcerated by another
 
 ```
 
-![](images/DailyICEApprehensions.jpg)
+![](images/JailTransfers.jpg)
 
 ## Daily supervision/administrative arrests
 
