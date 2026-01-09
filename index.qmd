@@ -1,5 +1,5 @@
 ---
-title: "The Residuals Observatory"
+title: "The Observatory"
 page-layout: full
 toc: false
 format:
@@ -15,7 +15,6 @@ A quiet place to examine social issues and justice measuring the gaps between wh
 ### Current focus areas
 
 -   Immigration enforcement & detention metrics
--   Public health equity & access
 
 <hr>
 
