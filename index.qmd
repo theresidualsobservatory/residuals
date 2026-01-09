@@ -20,13 +20,15 @@ A quiet place to examine social issues and justice measuring the gaps between wh
 
 ## Contact
 
-If you want to share data sources, corrections, or collaboration ideas, please send an email to: theresidualsobservatory\@gmail.com
+If you have any comments or suggestions, please send an email to: **theresidualsobservatory\@gmail.com.**
 
 ## Projects
 
 :::::::: project-stack
 ::::::: project-panel
+::: obs-header
 Observation [OBS-001]{.obs-id}
+:::
 
 ### ICE Arrests Without Criminal Charges
 
@@ -59,27 +61,6 @@ A modeling sandbox exploring when counter-messaging can realistically dampen spr
 
 </div>
 
-:::: project-panel
-::: obs-header
-Observation [OBS-003]{.obs-id}
-:::
-
-### Detention as a Statistical Artifact
-
-**Status:** Methods note\
-**Focus:** Bias, categorization, data-generating processes
-
-How enforcement datasets can manufacture “criminality” signals via labels, missingness, and administrative rules—without underlying behavior changing.
-
-<hr class="obs-divider">
-
-[Open →](projects/detention-artifacts.qmd)
-
-</div>
-
-</div>
-
-::::
 
 ::::::
 
