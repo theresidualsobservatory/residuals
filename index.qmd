@@ -12,7 +12,7 @@ format:
 
 ## What this is
 
-**A** quiet place to examine social issues and justice measuring the gaps between what we are "supposed" to expect and what we actually see.
+A quiet place to examine social issues and justice measuring the gaps between what we are "supposed" to expect and what we actually see.
 
 ### Current focus areas
 
@@ -27,11 +27,9 @@ If you want to share data sources, corrections, or collaboration ideas, please s
 
 ## Projects
 
-::::::::: project-stack
-:::::::: project-panel
-::: obs-header
+:::::::: project-stack
+::::::: project-panel
 Observation [OBS-001]{.obs-id}
-:::
 
 ### ICE Arrests Without Criminal Charges
 
@@ -101,5 +99,5 @@ How enforcement datasets can manufacture “criminality” signals via labels, m
 :::::::::
 ::::
 ::::::
+:::::::
 ::::::::
-:::::::::
