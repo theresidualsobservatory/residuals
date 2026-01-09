@@ -38,7 +38,7 @@ A data-driven look at arrests where criminal charges or convictions are not part
 
 <hr class="obs-divider">
 
-[Open →](projects/2026.01.09_ICE_activity/2026.01.09_ICE_activity.qmd)
+[Open →](projects/2026.01.09_ICE_activity/2026.01.09_ICE_activity.html)
 
 </div>
 
