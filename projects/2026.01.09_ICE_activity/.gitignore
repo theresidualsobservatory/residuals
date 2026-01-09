@@ -1,9 +1,0 @@
-# Data / binary files (never track)
-*.xlsx
-*.rds
-*.RData
-*.qs
-*.csv
-*.feather
-*.parquet
-.DS_Store
