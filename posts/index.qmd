@@ -1,0 +1,10 @@
+---
+title: "Blog"
+listing:
+  contents: .
+  sort: "date desc"
+  type: default
+  date-format: "MMMM D, YYYY"
+---
+
+A quiet place to examine social issues and justice measuring the gaps between what we are "supposed" to expect and what we actually see.

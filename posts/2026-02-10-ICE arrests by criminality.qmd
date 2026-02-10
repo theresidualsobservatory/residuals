@@ -1,0 +1,5 @@
+---
+title: "ICE arrests by criminality"
+---
+
+![](/images/arrests_v_criminality.jpg)
